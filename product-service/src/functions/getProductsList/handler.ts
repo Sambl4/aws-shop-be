@@ -4,9 +4,12 @@ import { middyfy } from '@libs/lambda';
 
 import schema from './schema';
 import { getProducts } from 'src/db/product.service';
+import { Product } from 'src/models/Product';
 
 const getProductsList: ValidatedEventAPIGatewayProxyEvent<typeof schema> = async () => {
-  return formatJSONResponse(getProducts());
+  const products: Product[] = await getProducts();
+
+  return formatJSONResponse(products);
 };
 
 export const main = middyfy(getProductsList);

@@ -40,4 +40,4 @@ const products: Product[] = [
 ];
 
 export const getProducts = () => products;
-export const getProductById = (id: string) => {};
+export const getProductById = (id: string) => products.find(product => product.id === id);
