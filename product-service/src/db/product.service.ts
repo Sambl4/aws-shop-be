@@ -1,6 +1,6 @@
-import { Product } from 'src/models/Product';
+import { ProductsList } from 'src/types/api-types';
 
-const products: Product[] = [
+const products: ProductsList = [
   {
     description: 'Short Product Description1',
     id: '7567ec4b-b10c-48c5-9345-fc73c48a80aa',

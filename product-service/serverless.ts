@@ -5,7 +5,11 @@ import getProductsById from '@functions/getProductsById';
 const serverlessConfiguration: AWS = {
   service: 'product-service',
   frameworkVersion: '3',
-  plugins: ['serverless-esbuild'],
+  plugins: [
+    'serverless-auto-swagger',
+    'serverless-esbuild',
+    'serverless-offline'
+  ],
   provider: {
     name: 'aws',
     runtime: 'nodejs20.x',
@@ -35,6 +39,9 @@ const serverlessConfiguration: AWS = {
   },
   package: { individually: true },
   custom: {
+    autoswagger: {
+      typefiles: ['src/types/api-types.d.ts'],
+    },
     esbuild: {
       bundle: true,
       minify: false,

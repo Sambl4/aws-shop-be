@@ -4,11 +4,11 @@ import { middyfy } from '@libs/lambda';
 
 import schema from './schema';
 import { getProductById } from 'src/db/product.service';
-import { Product } from 'src/models/Product';
+import { IProduct } from 'src/types/api-types';
 
 const getProductsById: ValidatedEventAPIGatewayProxyEvent<typeof schema> = async (event) => {
   const productId: string = event.pathParameters.productId;
-  const product: Product = await getProductById(productId);
+  const product: IProduct = await getProductById(productId);
 
   return product ? formatJSONResponse([product]) : formatJSONResponse(`Product ${productId} not found`, 404);
 };
