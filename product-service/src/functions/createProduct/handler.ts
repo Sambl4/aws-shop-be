@@ -16,7 +16,6 @@ const createProduct: ValidatedEventAPIGatewayProxyEvent<typeof schema> = async (
 
     const response = await putNewProduct(product);
 
-    console.log(response)
     return formatJSONResponse(response.toString());
   } catch (err) {
     return {

@@ -15,7 +15,8 @@ export default {
           404: {
             description: 'Product ID not found',
             bodyType: 'string',
-          }
+          },
+          500: 'Server error',
         },
       },
     },

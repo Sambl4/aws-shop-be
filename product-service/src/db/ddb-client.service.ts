@@ -1,5 +1,5 @@
 import { DynamoDBClient, ScanCommand } from '@aws-sdk/client-dynamodb';
-import { DeleteCommand, DeleteCommandOutput, DynamoDBDocumentClient, GetCommand, GetCommandInput, GetCommandOutput, PutCommand, PutCommandInput, PutCommandOutput, QueryCommand, ScanCommandInput, ScanCommandOutput } from '@aws-sdk/lib-dynamodb';
+import { DeleteCommand, DeleteCommandOutput, DynamoDBDocumentClient, GetCommand, GetCommandInput, GetCommandOutput, PutCommand, PutCommandInput, PutCommandOutput, QueryCommand, ScanCommandInput, ScanCommandOutput, TransactWriteCommand, TransactWriteCommandInput, TransactWriteCommandOutput } from '@aws-sdk/lib-dynamodb';
 import { marshall, unmarshall } from '@aws-sdk/util-dynamodb';
 
 // TODO: use env vars instead of {region: 'eu-west-1'}
@@ -72,6 +72,14 @@ export const putProduct = async (tableName: string, item: any): Promise<number> 
     return data.$metadata.httpStatusCode;
   } catch (err) {
     console.log(err);
+  }
+}
+
+export const transactionWrite = async (params: TransactWriteCommandInput): Promise<TransactWriteCommandOutput> => {
+  try {
+    return await docClient.send(new TransactWriteCommand(params));
+  } catch (error) {
+    throw new Error(error);
   }
 }
 
