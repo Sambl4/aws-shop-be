@@ -1,6 +1,7 @@
 import type { AWS } from '@serverless/typescript';
 import getProductsList from '@functions/getProductsList';
 import getProductsById from '@functions/getProductsById';
+import createProduct from '@functions/createProduct';
 
 const serverlessConfiguration: AWS = {
   service: 'product-service',
@@ -21,7 +22,7 @@ const serverlessConfiguration: AWS = {
     },
     httpApi: {
       cors: {
-        allowedMethods: ['GET'],
+        allowedMethods: ['GET', 'POST', 'PUT'],
         allowedOrigins: [
           'http://localhost:5173',
           'https://d2exfjxf8vormv.cloudfront.net',
@@ -31,9 +32,15 @@ const serverlessConfiguration: AWS = {
     environment: {
       AWS_NODEJS_CONNECTION_REUSE_ENABLED: '1',
       NODE_OPTIONS: '--enable-source-maps --stack-trace-limit=1000',
+      // dynamoTables: {
+      //   PRODUCTS: 'aws-test-shop-Product',
+      //   STOCKS: 'aws-test-shop-Stock',
+      // }
     },
+    iamManagedPolicies: ['arn:aws:iam::aws:policy/AmazonDynamoDBFullAccess'],
   },
   functions: {
+    createProduct,
     getProductsList,
     getProductsById,
   },
@@ -51,6 +58,36 @@ const serverlessConfiguration: AWS = {
       define: { 'require.resolve': undefined },
       platform: 'node',
       concurrency: 10,
+    },
+  },
+  resources: {
+    Resources: {
+      ProductsTable: {
+        Type: 'AWS::DynamoDB::Table',
+        Properties: {
+          TableName: 'aws-test-shop-Products',
+          AttributeDefinitions: [
+            { AttributeName: 'id', AttributeType: 'S', },
+          ],
+          KeySchema: [
+            { AttributeName: 'id', KeyType: 'HASH' },
+          ],
+          BillingMode: 'PAY_PER_REQUEST',
+        },
+      },
+      StocksTable: {
+        Type: 'AWS::DynamoDB::Table',
+        Properties: {
+          TableName: 'aws-test-shop-Stocks',
+          AttributeDefinitions: [
+            { AttributeName: 'product_id', AttributeType: 'S', },
+          ],
+          KeySchema: [
+            { AttributeName: 'product_id', KeyType: 'HASH' },
+          ],
+          BillingMode: 'PAY_PER_REQUEST',
+        },
+      },
     },
   },
 };
