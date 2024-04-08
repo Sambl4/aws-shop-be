@@ -32,10 +32,6 @@ const serverlessConfiguration: AWS = {
     environment: {
       AWS_NODEJS_CONNECTION_REUSE_ENABLED: '1',
       NODE_OPTIONS: '--enable-source-maps --stack-trace-limit=1000',
-      // dynamoTables: {
-      //   PRODUCTS: 'aws-test-shop-Product',
-      //   STOCKS: 'aws-test-shop-Stock',
-      // }
     },
     iamManagedPolicies: ['arn:aws:iam::aws:policy/AmazonDynamoDBFullAccess'],
   },
