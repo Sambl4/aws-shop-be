@@ -7,6 +7,8 @@ import { getProductById } from 'src/db/product.service';
 import { IProduct } from 'src/types/api-types';
 
 const getProductsById: ValidatedEventAPIGatewayProxyEvent<typeof schema> = async (event) => {
+  console.log('getProductsById event:', event);
+
   const productId: string = event.pathParameters.productId;
   const product: IProduct = await getProductById(productId);
 

@@ -1,43 +1,48 @@
-import { ProductsList } from 'src/types/api-types';
+import { IProduct, IStock, ProductsList, StockList } from 'src/types/api-types';
+import { getItemById, getTableData, putProduct } from './ddb-client.service';
+import { v4 as uuidv4 } from 'uuid';
 
-const products: ProductsList = [
-  {
-    description: 'Short Product Description1',
-    id: '7567ec4b-b10c-48c5-9345-fc73c48a80aa',
-    price: 24,
-    title: 'ProductOne',
-  },
-  {
-    description: 'Short Product Description7',
-    id: '7567ec4b-b10c-48c5-9345-fc73c48a80a1',
-    price: 15,
-    title: 'ProductTitle',
-  },
-  {
-    description: 'Short Product Description2',
-    id: '7567ec4b-b10c-48c5-9345-fc73c48a80a3',
-    price: 23,
-    title: 'Product',
-  },
-  {
-    description: 'Short Product Description4',
-    id: '7567ec4b-b10c-48c5-9345-fc73348a80a1',
-    price: 15,
-    title: 'ProductTest',
-  },
-  {
-    description: 'Short Product Descriptio1',
-    id: '7567ec4b-b10c-48c5-9445-fc73c48a80a2',
-    price: 23,
-    title: 'Product2',
-  },
-  {
-    description: 'Short Product Description7',
-    id: '7567ec4b-b10c-45c5-9345-fc73c48a80a1',
-    price: 15,
-    title: 'ProductName',
-  },
-];
+export const getProducts = async (): Promise<ProductsList> => {
+  const products = await getTableData('aws-test-shop-Products') as ProductsList;
+  const stocks = await getTableData('aws-test-shop-Stocks') as StockList;
 
-export const getProducts = () => products;
-export const getProductById = (id: string) => products.find(product => product.id === id);
+  return joinStocksWithProducts(products, stocks);
+}
+
+export const getProductById = async (id: string): Promise<IProduct> => {
+  const product = await getItemById('aws-test-shop-Products', id) as IProduct;
+  const stock = await getItemById('aws-test-shop-Stocks', id) as IStock;
+
+  return {
+    ...product,
+    count: stock.count,
+  };
+}
+
+export const putNewProduct = async(item: IProduct) => {
+  const id: string = uuidv4();
+  const product = {
+    description: item.description,
+    price: item.price,
+    title: item.title,
+    id,
+  }
+  const stock = {
+    product_id: id,
+    count: item.count,
+  }
+
+  return await Promise.all([
+    putProduct('aws-test-shop-Products', product),
+    putProduct('aws-test-shop-Stocks', stock),
+  ]);
+}
+
+const joinStocksWithProducts = (products: ProductsList, stocks: StockList): ProductsList => {
+  return products.map(product => {
+    return {
+      ...product,
+      count: stocks.find(stock => stock.product_id === product.id).count,
+    }
+  });
+}

@@ -12,6 +12,7 @@ export default {
             description: 'Successful API Response',
             bodyType: 'ProductsList',
           },
+          500: 'Server error',
         },
       },
     },
