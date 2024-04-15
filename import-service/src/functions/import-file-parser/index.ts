@@ -11,9 +11,9 @@ export default {
         bucket,
         event: 's3:ObjectCreated:*',
         rules: [{
-					prefix: folder,
-				}],
-				existing: true,
+          prefix: folder,
+        }],
+        existing: true,
       }
     }
   ],
