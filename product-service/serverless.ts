@@ -2,6 +2,7 @@ import type { AWS } from '@serverless/typescript';
 import getProductsList from '@functions/getProductsList';
 import getProductsById from '@functions/getProductsById';
 import createProduct from '@functions/createProduct';
+import catalogBatchProcess from '@functions/catalogBatchProcess';
 
 const serverlessConfiguration: AWS = {
   service: 'product-service',
@@ -25,20 +26,36 @@ const serverlessConfiguration: AWS = {
         allowedMethods: ['GET', 'POST', 'PUT'],
         allowedOrigins: [
           'http://localhost:5173',
-          'https://d2exfjxf8vormv.cloudfront.net',
+          'https://dl0u2y8xthtyz.cloudfront.net',
         ],
       }
     },
     environment: {
       AWS_NODEJS_CONNECTION_REUSE_ENABLED: '1',
       NODE_OPTIONS: '--enable-source-maps --stack-trace-limit=1000',
+      SQS_URL: {
+        Ref: 'SQSQueue',
+      },
+      SNSTopic_ARN: {
+        Ref: 'SNSTopic'
+      },
     },
     iamManagedPolicies: ['arn:aws:iam::aws:policy/AmazonDynamoDBFullAccess'],
+    iamRoleStatements: [{
+      Effect: 'Allow',
+      Action: [
+        'sns:*',
+      ],
+      Resource: [{
+        Ref: 'SNSTopic'
+      }],
+    }],
   },
   functions: {
     createProduct,
     getProductsList,
     getProductsById,
+    catalogBatchProcess,
   },
   package: { individually: true },
   custom: {
@@ -82,6 +99,41 @@ const serverlessConfiguration: AWS = {
             { AttributeName: 'product_id', KeyType: 'HASH' },
           ],
           BillingMode: 'PAY_PER_REQUEST',
+        },
+      },
+      SQSQueue: {
+        Type: 'AWS::SQS::Queue',
+        Properties: {
+          QueueName: 'aws-test-shop-sqs-queue',
+        },
+      },
+      SNSTopic: {
+        Type: 'AWS::SNS::Topic',
+        Properties: {
+          TopicName: 'aws-test-shop-sns-topic',
+        },
+      },
+      SNSSubscription: {
+        Type: 'AWS::SNS::Subscription',
+        Properties: {
+          Endpoint: 'dzmitry_samuilik@epam.com',
+          Protocol: 'email',
+          TopicArn: {
+            Ref: 'SNSTopic',
+          },
+          FilterPolicyScope: 'MessageAttributes',
+        },
+      },
+      SNSSubscriptionFiltered: {
+        Type: 'AWS::SNS::Subscription',
+        Properties: {
+          Endpoint: 'dzsambl4@gmail.com',
+          Protocol: 'email',
+          TopicArn: {
+            Ref: 'SNSTopic',
+          },
+          FilterPolicyScope: 'MessageBody',
+          FilterPolicy: { body: [{'anything-but': ['new']}] }
         },
       },
     },
