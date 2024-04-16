@@ -122,6 +122,7 @@ const serverlessConfiguration: AWS = {
             Ref: 'SNSTopic',
           },
           FilterPolicyScope: 'MessageAttributes',
+          // FilterPolicy: JSON.stringify({ body: { price: [{'numeric': ['>=', 50]}] } })
         },
       },
       SNSSubscriptionFiltered: {
@@ -133,7 +134,7 @@ const serverlessConfiguration: AWS = {
             Ref: 'SNSTopic',
           },
           FilterPolicyScope: 'MessageBody',
-          FilterPolicy: { body: [{'anything-but': ['new']}] }
+          FilterPolicy: { 'title': [{'prefix': 'new'}] }
         },
       },
     },
