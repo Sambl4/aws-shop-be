@@ -14,6 +14,9 @@ export default {
           },
           500: 'Server error',
         },
+        authorizer: {
+          name: 'importAuthorizerFunction',
+        },
       },
     },
   ],

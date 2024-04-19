@@ -1,7 +1,7 @@
 import { formatJSONResponse } from '@libs/api-gateway';
 import { CopyObjectCommand, DeleteObjectCommand, GetObjectCommand, GetObjectCommandInput, GetObjectCommandOutput, S3Client } from '@aws-sdk/client-s3';
 import { S3Event, S3EventRecord } from 'aws-lambda/trigger/s3';
-import { SQSClient, SendMessageCommand, SendMessageCommandInput, SendMessageCommandOutput, paginateListQueues } from '@aws-sdk/client-sqs';
+import { SQSClient, SendMessageCommand, SendMessageCommandInput } from '@aws-sdk/client-sqs';
 import csv from 'csv-parser';
 import middy from '@middy/core';
 
@@ -14,12 +14,6 @@ const docClient = new S3Client({ region });
 const sqsClient = new SQSClient({ region });
 
 const importFileParser = async (event: S3Event) => {
-  console.log('import file parser / sqs client',
-    sqsClient.config.endpoint,
-    sqsClient.config.region,
-    sqsClient.config.runtime,
-    sqsClient.config.defaultSigningName
-)
   try {
     await Promise.all(
       event.Records.map(async (record: S3EventRecord) => {

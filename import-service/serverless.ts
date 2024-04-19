@@ -22,6 +22,15 @@ const serverlessConfiguration: AWS = {
           'http://localhost:5173',
           'https://dl0u2y8xthtyz.cloudfront.net',
         ],
+      },
+      authorizers: {
+        importAuthorizerFunction: {
+          type: 'request',
+          name: 'importAuthorizerFunction',
+          functionArn: 'arn:aws:lambda:eu-west-1:211125737928:function:authorization-service-dev-basicAuthorizer',
+          identitySource: '$request.header.Authorization',
+          resultTtlInSeconds: 0,
+        }
       }
     },
     environment: {
