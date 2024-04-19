@@ -20,13 +20,24 @@ const serverlessConfiguration: AWS = {
         allowedMethods: ['GET', 'POST', 'PUT'],
         allowedOrigins: [
           'http://localhost:5173',
-          'https://d2exfjxf8vormv.cloudfront.net',
+          'https://dl0u2y8xthtyz.cloudfront.net',
         ],
+      },
+      authorizers: {
+        importAuthorizerFunction: {
+          type: 'request',
+          name: 'importAuthorizerFunction',
+          functionArn: 'arn:aws:lambda:eu-west-1:211125737928:function:authorization-service-dev-basicAuthorizer',
+          identitySource: '$request.header.Authorization',
+          resultTtlInSeconds: 0,
+        }
       }
     },
     environment: {
       AWS_NODEJS_CONNECTION_REUSE_ENABLED: '1',
       NODE_OPTIONS: '--enable-source-maps --stack-trace-limit=1000',
+      SQS_URL: 'https://sqs.eu-west-1.amazonaws.com/211125737928/aws-test-shop-sqs-queue',
+      SQS_ARN: 'arn:aws:sqs:eu-west-1:211125737928:aws-test-shop-sqs-queue',
     },
     iamRoleStatements: [{
       Effect: 'Allow',
@@ -41,6 +52,14 @@ const serverlessConfiguration: AWS = {
       ],
       Resource: [
         'arn:aws:s3:::aws-test-shop-import-bucket/*',
+      ],
+    }, {
+      Effect: 'Allow',
+      Action: [
+        'sqs:*',
+      ],
+      Resource: [
+        '${self:provider.environment.SQS_ARN}'
       ],
     }],
   },
@@ -78,7 +97,7 @@ const serverlessConfiguration: AWS = {
                 AllowedMethods: ['PUT'],
                 AllowedOrigins: [
                   'http://localhost:5173',
-                  'https://d2exfjxf8vormv.cloudfront.net',
+                  'https://dl0u2y8xthtyz.cloudfront.net',
                 ],
               },
             ],
